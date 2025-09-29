@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Register</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white flex justify-center items-center h-screen">
+  <div class="w-96">
+    <h2 class="text-2xl mb-4">Register</h2>
+    <input id="username" class="w-full mb-2 p-2 bg-gray-700" placeholder="Username">
+    <input id="password" type="password" class="w-full mb-4 p-2 bg-gray-700" placeholder="Password">
+    <button onclick="register()" class="bg-green-500 px-4 py-2">Register</button>
+    <p class="mt-2"><a href="login.html" class="text-blue-300">Login</a></p>
+  </div>
+<script>
+async function register(){
+  const username=document.getElementById('username').value;
+  const password=document.getElementById('password').value;
+  const res=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})});
+  const data=await res.json();
+  if(res.ok){
+    localStorage.setItem('token',data.token);
+    localStorage.setItem('username',data.username);
+    location.href='chat.html';
+  } else alert(data.message);
+}
+</script>
+</body>
+</html>

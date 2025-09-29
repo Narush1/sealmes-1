@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Chat</title>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white">
+  <div class="p-4">
+    <h1 class="text-2xl mb-4">Sealmes Chat</h1>
+    <div>
+      <input id="room" placeholder="Enter room" class="p-2 bg-gray-700">
+      <button onclick="joinRoom()" class="bg-green-500 px-4 py-2 ml-2">Join</button>
+    </div>
+    <div id="chat" class="mt-6 h-64 overflow-y-auto border p-4"></div>
+    <input id="msg" class="w-full p-2 bg-gray-800 mt-2" placeholder="Type a message" onkeydown="if(event.key==='Enter') sendMessage()">
+  </div>
+<script>
+const socket=io();
+let username=localStorage.getItem('username');
+let room='general';
+
+function joinRoom(){
+  room=document.getElementById('room').value||'general';
+  socket.emit('joinRoom',{room,username});
+  document.getElementById('chat').innerHTML='';
+}
+
+socket.on('chatHistory',h=>h.forEach(addMessage));
+socket.on('message',addMessage);
+
+function addMessage({user,text}){
+  const chat=document.getElementById('chat');
+  chat.innerHTML+=`<div><b>${user}:</b> ${text}</div>`;
+  chat.scrollTop=chat.scrollHeight;
+}
+
+function sendMessage(){
+  const msg=document.getElementById('msg').value;
+  if(!msg.trim())return;
+  socket.emit('sendMessage',msg);
+  document.getElementById('msg').value='';
+}
+
+joinRoom();
+</script>
+</body>
+</html>
